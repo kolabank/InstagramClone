@@ -5,19 +5,29 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 import com.shashank.sony.fancytoastlib.FancyToast;
 
+import java.util.List;
+
 public class SignUp extends AppCompatActivity {
 
-    EditText edtName, edtSpeed, edtPower;
+  private  EditText edtName, edtSpeed, edtPower;
 
-    Button btnSave;
+   private Button btnSave, getAllData;
+
+    private TextView txtGetData;
+
+    private String allKickBoxers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,29 +37,86 @@ public class SignUp extends AppCompatActivity {
         edtName = findViewById(R.id.edtName);
         edtSpeed = findViewById(R.id.edtSpeed);
         edtPower = findViewById(R.id.edtPower);
+        txtGetData = findViewById(R.id.txtGetData);
+        getAllData = findViewById(R.id.getAllData);
+
+        txtGetData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+//                ParseQuery<ParseObject>parseQuery = ParseQuery.getQuery("KickBoxer");
+//                parseQuery.getInBackground("HoT6xxMJpl", new GetCallback<ParseObject>() {
+//                    @Override
+//                    public void done(ParseObject object, ParseException e) {
+//
+//                        if (object!=null && e == null){
+//
+//                            txtGetData.setText(object.get("name")+" - " + "Kick Power = " + object.get("kickPower"));
+//                        }
+//                    }
+//                });
+
+
+
+                // To extract a particular data cell from the parse object
+
+                ParseQuery<ParseObject>parseQuery = ParseQuery.getQuery("KickBoxer");
+                parseQuery.getInBackground("oSVXgZVYgm", new GetCallback<ParseObject>() {
+                    @Override
+                    public void done(ParseObject object, ParseException e) {
+                        if (object!=null && e == null){
+
+                            txtGetData.setText(object.get("name") + " has Kick Speed of " + object.get("kickSpeed"));
+                        }
+                    }
+                });
+
+            }
+        });
+
+
+        //To extract all the data of the parse object
+
+        getAllData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                allKickBoxers = "";
+
+                ParseQuery<ParseObject>queryAll = ParseQuery.getQuery("KickBoxer");
+                queryAll.findInBackground(new FindCallback<ParseObject>() {
+                    @Override
+                    public void done(List<ParseObject> objects, ParseException e) {
+                        if (e == null) {
+                            if (objects.size()>0){
+
+                                for (ParseObject kickBoxer:objects){
+
+                                    allKickBoxers = allKickBoxers + kickBoxer.get("name") + "\n";
+
+                                }
+
+
+                                FancyToast.makeText(SignUp.this, allKickBoxers , Toast.LENGTH_LONG, FancyToast.SUCCESS, true).show();
+                            }
+                        else {
+                                FancyToast.makeText(SignUp.this,"Error", Toast.LENGTH_LONG, FancyToast.ERROR, true).show();
+
+                            }
+                        }
+                    }
+                });
+            }
+        });
 
     }
 
 
-//    public void helloWorldTap(View view){
-//        ParseObject boxer = new ParseObject("Boxer");
-//        boxer.put("punch_speed", 200);
-//        boxer.saveInBackground(new SaveCallback() {
-//            @Override
-//            public void done(ParseException e) {
-//
-//                if (e==null){
-//                    Toast.makeText(SignUp.this,"boxer object is saved successfully", Toast.LENGTH_LONG).show();
-//                }
-//            }
-//        });
-//
-//
-//    }
+
 
     public void btnSave(View v) {
 
-        try {
+        try {           // This is to for error handling ...try and catch combination
 
             String name = edtName.getText().toString();
             int speed = Integer.parseInt(edtSpeed.getText().toString());
