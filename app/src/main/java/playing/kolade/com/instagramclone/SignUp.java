@@ -29,6 +29,9 @@ public class SignUp extends AppCompatActivity {
 
     private String allKickBoxers;
 
+    private Button btnTransition;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +42,7 @@ public class SignUp extends AppCompatActivity {
         edtPower = findViewById(R.id.edtPower);
         txtGetData = findViewById(R.id.txtGetData);
         getAllData = findViewById(R.id.getAllData);
+        btnTransition = findViewById(R.id.btnNextActivity);
 
         txtGetData.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,6 +88,10 @@ public class SignUp extends AppCompatActivity {
                 allKickBoxers = "";
 
                 ParseQuery<ParseObject>queryAll = ParseQuery.getQuery("KickBoxer");
+
+                queryAll.whereGreaterThan("kickPower", 100); //This is to show the objects with kickPoser greater than 100
+                queryAll.setLimit(1); //This sets the limit of the number of displayed results to 1
+
                 queryAll.findInBackground(new FindCallback<ParseObject>() {
                     @Override
                     public void done(List<ParseObject> objects, ParseException e) {
@@ -95,7 +103,6 @@ public class SignUp extends AppCompatActivity {
                                     allKickBoxers = allKickBoxers + kickBoxer.get("name") + "\n";
 
                                 }
-
 
                                 FancyToast.makeText(SignUp.this, allKickBoxers , Toast.LENGTH_LONG, FancyToast.SUCCESS, true).show();
                             }
@@ -109,7 +116,16 @@ public class SignUp extends AppCompatActivity {
             }
         });
 
+        btnTransition.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+            }
+        });
+
     }
+
 
 
 
